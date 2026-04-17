@@ -1,0 +1,10 @@
+route:
+  receiver: 'telegram_webhook'
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 1h
+
+receivers:
+  - name: 'telegram_webhook'
+    webhook_configs:
+      - url: 'https://webhook.site/6e582281-82c0-432b-94fc-89d59aedc3ac'

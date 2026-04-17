@@ -1,0 +1,11 @@
+groups:
+  - name: sentinelsol_alerts
+    rules:
+      - alert: ValidatorStalled
+        expr: rate(sentinelsol_epoch_credits[2m]) == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SentinelSOL: Validator Velocity Dropped to Zero"
+          description: "Your validator has not earned any vote credits in the last 2 minutes. Delinquency risk is high."
