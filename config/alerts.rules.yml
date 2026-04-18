@@ -1,0 +1,23 @@
+groups:
+  - name: sentinelsol_alerts
+    rules:
+      - alert: ValidatorStalled
+        expr: rate(sentinelsol_epoch_credits[2m]) == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SentinelSOL: Validator Velocity Dropped to Zero"
+          description: "Validator has earned 0 vote credits in the last 2 minutes."
+
+      - alert: TVCDegradation
+        expr: >
+          (rate(sentinelsol_epoch_credits[5m]) / rate(sentinelsol_node_slot[5m])) 
+          < 0.8 * (rate(sentinelsol_epoch_credits[1h]) / rate(sentinelsol_node_slot[1h]))
+          and rate(sentinelsol_node_slot[5m]) > 0
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "SentinelSOL: Vote Efficiency Degradation"
+          description: "Vote-to-slot efficiency dropped >20% below the 1-hour baseline. Pre-delinquency signal detected."
