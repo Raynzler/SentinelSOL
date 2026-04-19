@@ -22,3 +22,12 @@ services:
       - prometheus
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=colosseum
+
+  extractor:
+    build: .
+    container_name: sentinelsol_daemon
+    ports:
+        - "8080:8080"
+        # Wait for Prometheus to start before the Go app starts
+    depends_on:
+        - prometheus
