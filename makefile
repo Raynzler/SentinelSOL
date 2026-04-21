@@ -1,10 +1,10 @@
 .PHONY: up down logs restart
 
-# The Colosseum MVP 1-Click Deploy
+# The SentinelSOL MVP 1-Click Deploy
 up:
 	docker-compose up -d --build
 
-# Graceful Teardown
+# Graceful degradation of the cluster
 down:
 	docker-compose down
 
@@ -13,4 +13,5 @@ logs:
 	docker-compose logs -f
 
 # Hard restart the entire cluster
-restart: down up
+restart: 
+	down up
