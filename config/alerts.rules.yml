@@ -1,23 +1,21 @@
 groups:
-  - name: sentinelsol_alerts
+  - name: sentinelsol_predictive_alerts
     rules:
-      - alert: ValidatorStalled
-        expr: rate(sentinelsol_epoch_credits[2m]) == 0
-        for: 1m
+      # 1. Continuous Recording Rule: Calculate the raw ratio every 15 seconds
+      - record: instance:vote_efficiency:ratio
+        expr: rate(sentinelsol_epoch_credits[1m]) / rate(sentinelsol_node_slot[1m])
+
+      # 2. The Predictive Alert: Trigger if current performance is 3 standard deviations below the 1-hour norm
+      - alert: TVCDegradation_Anomaly
+        expr: >
+          (
+            instance:vote_efficiency:ratio 
+            - avg_over_time(instance:vote_efficiency:ratio[1h])
+          ) 
+          / stddev_over_time(instance:vote_efficiency:ratio[1h]) < -3
+        for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "SentinelSOL: Validator Velocity Dropped to Zero"
-          description: "Validator has earned 0 vote credits in the last 2 minutes."
-
-      - alert: TVCDegradation
-        expr: >
-          (rate(sentinelsol_epoch_credits[5m]) / rate(sentinelsol_node_slot[5m])) 
-          < 0.8 * (rate(sentinelsol_epoch_credits[1h]) / rate(sentinelsol_node_slot[1h]))
-          and rate(sentinelsol_node_slot[5m]) > 0
-        for: 3m
-        labels:
-          severity: warning
-        annotations:
-          summary: "SentinelSOL: Vote Efficiency Degradation"
-          description: "Vote-to-slot efficiency dropped >20% below the 1-hour baseline. Pre-delinquency signal detected."
+          summary: "Predictive Degradation Detected on {{ $labels.instance }}"
+          description: "Validator efficiency has dropped 3 standard deviations below its 1-hour rolling baseline. Hardware failure or network exhaustion is imminent."

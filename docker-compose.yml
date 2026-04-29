@@ -22,7 +22,8 @@ services:
       - prometheus
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=colosseum
-
+    volumes:
+      - ./config/grafana/provisioning/datasources:/etc/grafana/provisioning
   extractor:
     build: .
     container_name: sentinelsol_daemon
