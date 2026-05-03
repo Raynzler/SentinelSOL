@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"sync"
 	"time"
+	_ "net/http/pprof" //self observability for profiling
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -135,6 +136,15 @@ func recordMetrics() {
 }
 
 func main() {
+
+	// 1. Boot the diagnostic server in the background for self-observability using pprof
+    go func() {
+        log.Println("SRE: Self-Observability pprof server running on :6060")
+        if err := http.ListenAndServe("0.0.0.0:6060", nil); err != nil {
+            log.Printf("SRE: pprof server failed: %v", err)
+        }
+    }()
+
 	recordMetrics()
 	log.Println("SentinelSOL Exporter active on :8080/metrics")
 	http.Handle("/metrics", promhttp.Handler())

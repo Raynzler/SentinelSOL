@@ -46,6 +46,7 @@ services:
     container_name: sentinelsol_daemon
     ports:
         - "8080:8080"
+        - "6060:6060"  # The pprof diagnostic port
         # Wait for Prometheus to start before the Go app starts
     depends_on:
         - prometheus

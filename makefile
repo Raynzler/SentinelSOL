@@ -2,6 +2,7 @@
 
 # The SentinelSOL MVP 1-Click Deploy
 up:
+	go mod tidy
 	docker-compose up -d --build
 
 # Graceful degradation of the cluster
