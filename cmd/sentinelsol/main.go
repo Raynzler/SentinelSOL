@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	_ "net/http/pprof" //self observability for profiling
 	"sync"
 	"time"
-	_ "net/http/pprof" //self observability for profiling
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -15,7 +15,7 @@ import (
 )
 
 const targetVoteAccount = "FGw2zfXPGye5K1SGNZeTEkvShssKU1bvDDobM2L19QXf"
-const rpcURL = "http://localhost:8899"
+const rpcURL = "http://host.docker.internal:8899"
 
 var (
 	epochCreditsMetric = promauto.NewGauge(prometheus.GaugeOpts{
@@ -138,12 +138,12 @@ func recordMetrics() {
 func main() {
 
 	// 1. Boot the diagnostic server in the background for self-observability using pprof
-    go func() {
-        log.Println("SRE: Self-Observability pprof server running on :6060")
-        if err := http.ListenAndServe("0.0.0.0:6060", nil); err != nil {
-            log.Printf("SRE: pprof server failed: %v", err)
-        }
-    }()
+	go func() {
+		log.Println("SRE: Self-Observability pprof server running on :6060")
+		if err := http.ListenAndServe("0.0.0.0:6060", nil); err != nil {
+			log.Printf("SRE: pprof server failed: %v", err)
+		}
+	}()
 
 	recordMetrics()
 	log.Println("SentinelSOL Exporter active on :8080/metrics")

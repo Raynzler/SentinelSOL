@@ -1,4 +1,12 @@
 services:
+  # 1. Your Go Daemon (The App)
+  extractor:
+    build: .
+    ports:
+      - "8080:8080" # Metrics
+      - "6060:6060" # pprof
+
+  # 2. The Observability Stack
   prometheus:
     image: prom/prometheus:latest
     volumes:
@@ -6,23 +14,6 @@ services:
       - ./config/alerts.rules.yml:/etc/prometheus/alerts.rules.yml
     ports:
       - "9090:9090"
-  
-  loki:
-    image: grafana/loki:2.9.2
-    ports:
-      - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
-    network_mode: "host"
-
-  promtail:
-    image: grafana/promtail:2.9.2
-    volumes:
-      - ./logs:/var/log/sentinelsol
-      - ./config/promtail-config.yml:/etc/promtail/config.yml
-    command: -config.file=/etc/promtail/config.yml
-    network_mode: "host"
-    depends_on:
-      - loki
 
   alertmanager:
     image: prom/alertmanager:latest
@@ -31,22 +22,28 @@ services:
     ports:
       - "9093:9093"
 
+  loki:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    volumes:
+      - /var/log:/var/log
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./config/promtail.yml:/etc/promtail/promtail.yml
+    command: -config.file=/etc/promtail/promtail.yml
+    depends_on:
+      - loki
+
   grafana:
     image: grafana/grafana:latest
     ports:
       - "3000:3000"
     depends_on:
       - prometheus
+      - loki
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=colosseum
-    volumes:
-      - ./config/grafana/provisioning/datasources:/etc/grafana/provisioning
-  extractor:
-    build: .
-    container_name: sentinelsol_daemon
-    ports:
-        - "8080:8080"
-        - "6060:6060"  # The pprof diagnostic port
-        # Wait for Prometheus to start before the Go app starts
-    depends_on:
-        - prometheus
