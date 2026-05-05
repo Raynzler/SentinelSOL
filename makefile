@@ -14,5 +14,6 @@ logs:
 	docker-compose logs -f
 
 # Hard restart the entire cluster
-restart: 
-	down up
+restart:
+	$(MAKE) down
+	$(MAKE) up

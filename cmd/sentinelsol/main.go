@@ -14,6 +14,10 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+var httpClient = &http.Client{
+	Timeout: 5 * time.Second,
+}
+
 const targetVoteAccount = "FGw2zfXPGye5K1SGNZeTEkvShssKU1bvDDobM2L19QXf"
 const rpcURL = "http://host.docker.internal:8899"
 
@@ -50,13 +54,16 @@ type RPCResponseSlot struct {
 
 // Executes HTTP POST and decodes JSON response into the provided target interface
 func executeRPC(reqBody RPCRequest, target interface{}) error {
-	jsonData, _ := json.Marshal(reqBody)
-	resp, err := http.Post(rpcURL, "application/json", bytes.NewBuffer(jsonData))
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	return json.NewDecoder(resp.Body).Decode(target)
+    jsonData, _ := json.Marshal(reqBody)
+    
+    // 2. Swap http.Post for our custom httpClient.Post
+    resp, err := httpClient.Post(rpcURL, "application/json", bytes.NewBuffer(jsonData))
+    if err != nil {
+        return err
+    }
+    defer resp.Body.Close()
+    
+    return json.NewDecoder(resp.Body).Decode(target)
 }
 
 // Retrieves current epoch credits for the target vote account
