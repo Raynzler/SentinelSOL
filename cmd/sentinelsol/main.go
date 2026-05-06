@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	_ "net/http/pprof" //self observability for profiling
+	_ "net/http/pprof" // Injects /debug/pprof handlers into http.DefaultServeMux
 	"sync"
 	"time"
 
@@ -14,6 +14,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+// httpClient enforces a strict timeout to prevent goroutine leaks during RPC degraded states.
 var httpClient = &http.Client{
 	Timeout: 5 * time.Second,
 }
@@ -24,12 +25,12 @@ const rpcURL = "http://host.docker.internal:8899"
 var (
 	epochCreditsMetric = promauto.NewGauge(prometheus.GaugeOpts{
 		Name: "sentinelsol_epoch_credits",
-		Help: "Current total vote credits for the validator",
+		Help: "Absolute vote credits for the target validator",
 	})
 
 	nodeSlotMetric = promauto.NewGauge(prometheus.GaugeOpts{
 		Name: "sentinelsol_node_slot",
-		Help: "Highest slot processed by the validator",
+		Help: "Absolute local slot height of the validator node",
 	})
 )
 
@@ -52,21 +53,21 @@ type RPCResponseSlot struct {
 	Result int `json:"result"`
 }
 
-// Executes HTTP POST and decodes JSON response into the provided target interface
+// executeRPC handles payload marshaling and HTTP execution against the local validator.
+// It relies on the globally configured httpClient to prevent blocking indefinitely.
 func executeRPC(reqBody RPCRequest, target interface{}) error {
-    jsonData, _ := json.Marshal(reqBody)
-    
-    // 2. Swap http.Post for our custom httpClient.Post
-    resp, err := httpClient.Post(rpcURL, "application/json", bytes.NewBuffer(jsonData))
-    if err != nil {
-        return err
-    }
-    defer resp.Body.Close()
-    
-    return json.NewDecoder(resp.Body).Decode(target)
+	jsonData, _ := json.Marshal(reqBody)
+
+	resp, err := httpClient.Post(rpcURL, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	return json.NewDecoder(resp.Body).Decode(target)
 }
 
-// Retrieves current epoch credits for the target vote account
+// fetchEpochCredits executes a synchronous RPC call to retrieve the latest vote credit state.
 func fetchEpochCredits() float64 {
 	reqBody := RPCRequest{
 		JSONRPC: "2.0",
@@ -79,7 +80,7 @@ func fetchEpochCredits() float64 {
 
 	var rpcResp RPCResponseCredits
 	if err := executeRPC(reqBody, &rpcResp); err != nil {
-		log.Printf("Credit RPC failed: %v", err)
+		log.Printf("ERR: Credit RPC pipeline failed: %v", err)
 		return 0
 	}
 
@@ -92,7 +93,7 @@ func fetchEpochCredits() float64 {
 	return 0
 }
 
-// Retrieves the absolute slot height processed by the node
+// fetchSlot executes a synchronous RPC call to retrieve the network progression state.
 func fetchSlot() float64 {
 	reqBody := RPCRequest{
 		JSONRPC: "2.0",
@@ -102,13 +103,14 @@ func fetchSlot() float64 {
 
 	var rpcResp RPCResponseSlot
 	if err := executeRPC(reqBody, &rpcResp); err != nil {
-		log.Printf("Slot RPC failed: %v", err)
+		log.Printf("ERR: Slot RPC pipeline failed: %v", err)
 		return 0
 	}
 	return float64(rpcResp.Result)
 }
 
-// Initializes concurrent scraping using Goroutines and a WaitGroup to synchronize completion
+// recordMetrics initiates a non-blocking background daemon for RPC telemetry extraction.
+// It utilizes a WaitGroup to ensure atomic scrapes across multiple endpoints before sleeping.
 func recordMetrics() {
 	go func() {
 		for {
@@ -136,24 +138,41 @@ func recordMetrics() {
 				nodeSlotMetric.Set(slot)
 			}
 
-			log.Printf("Metrics Scraped - Credits: %v | Slot: %v", credits, slot)
+			log.Printf("INFO: Telemetry Scraped - Credits: %v | Slot: %v", credits, slot)
 			time.Sleep(10 * time.Second)
 		}
 	}()
 }
 
 func main() {
-
-	// 1. Boot the diagnostic server in the background for self-observability using pprof
+	// 1. Isolate the diagnostic server strictly to the loopback interface.
+	// This prevents memory profiles from leaking to the public internet while
+	// still allowing local SRE debugging via http://127.0.0.1:6060/debug/pprof
 	go func() {
-		log.Println("SRE: Self-Observability pprof server running on :6060")
-		if err := http.ListenAndServe("0.0.0.0:6060", nil); err != nil {
-			log.Printf("SRE: pprof server failed: %v", err)
+		log.Println("SYS: Internal pprof profiling active on 127.0.0.1:6060")
+		if err := http.ListenAndServe("127.0.0.1:6060", nil); err != nil {
+			log.Fatalf("FATAL: pprof listener collapsed: %v", err)
 		}
 	}()
 
+	// 2. Initialize asynchronous metric scraping daemon
 	recordMetrics()
-	log.Println("SentinelSOL Exporter active on :8080/metrics")
-	http.Handle("/metrics", promhttp.Handler())
-	http.ListenAndServe(":8080", nil)
+
+	// 3. Instantiate an isolated multiplexer for the metrics server.
+	// This ensures the public 8080 port does not inherit the DefaultServeMux pprof endpoints.
+	metricsMux := http.NewServeMux()
+	metricsMux.Handle("/metrics", promhttp.Handler())
+
+	// 4. Define explicit server boundaries to prevent slow-loris attacks and connection hangs.
+	metricsServer := &http.Server{
+		Addr:         ":8080",
+		Handler:      metricsMux,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+
+	log.Println("SYS: SentinelSOL Exporter bound to 0.0.0.0:8080/metrics")
+	if err := metricsServer.ListenAndServe(); err != nil {
+		log.Fatalf("FATAL: Metrics server collapsed: %v", err)
+	}
 }
