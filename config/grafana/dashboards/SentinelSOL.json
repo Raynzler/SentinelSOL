@@ -1,0 +1,26 @@
+{
+  "title": "SentinelSOL Telemetry",
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "refresh": "5s",
+  "panels": [
+    {
+      "title": "Node Slot Progression",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "sentinelsol_node_slot", "refId": "A" }
+      ]
+    },
+    {
+      "title": "Absolute Vote Credits",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        { "expr": "sentinelsol_epoch_credits", "refId": "A" }
+      ]
+    }
+  ]
+}
