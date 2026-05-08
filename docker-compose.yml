@@ -17,10 +17,13 @@ services:
 
   alertmanager:
     image: prom/alertmanager:latest
+    env_file:
+      - .env
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--config.expand-env'  # This is the magic flag
     volumes:
       - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-    ports:
-      - "9093:9093"
 
   loki:
     image: grafana/loki:2.9.0
@@ -42,6 +45,10 @@ services:
     image: grafana/grafana:latest
     ports:
       - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
     volumes:
       - ./config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - ./config/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
@@ -49,5 +56,3 @@ services:
     depends_on:
       - prometheus
       - loki
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=colosseum

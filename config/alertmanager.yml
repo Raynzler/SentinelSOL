@@ -5,10 +5,10 @@ route:
   repeat_interval: 1h
 
 receivers:
-  - name: 'telegram_alert'
+  - name: 'telegram'
     telegram_configs:
-      - bot_token: '8548757104:AAH7bzVSZqJYlVsvlxf1zX1vlggIkkVfuuY'
-        chat_id: 1784757653
+      - chat_id: ${TELEGRAM_CHAT_ID}
+        bot_token: ${TELEGRAM_BOT_TOKEN}
         parse_mode: 'HTML'
         message: |-
           🚨 <b>{{ .GroupLabels.alertname }}</b> 🚨
