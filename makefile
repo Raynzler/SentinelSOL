@@ -1,19 +1,22 @@
-.PHONY: up down logs restart
+.PHONY: up down restart logs clean
 
-# The SentinelSOL MVP 1-Click Deploy
+# Boots the entire telemetry pipeline in detached mode
 up:
-	go mod tidy
-	docker-compose up -d --build
+	docker-compose up --build -d
 
-# Graceful degradation of the cluster
+# Safely spins down the infrastructure and removes orphaned containers
 down:
-	docker-compose down
+	docker-compose down -v --remove-orphans
 
-# Tail the pipeline logs in real-time
-logs:
-	docker-compose logs -f
-
-# Hard restart the entire cluster
+# The SRE Clean Reboot (Fixes the P3 Audit Flag)
 restart:
 	$(MAKE) down
 	$(MAKE) up
+
+# Tails the logs for the Go extractor
+logs:
+	docker-compose logs -f extractor
+
+# Deep cleans the Docker environment for this project
+clean: down
+	docker system prune -f --volumes

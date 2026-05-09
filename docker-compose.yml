@@ -36,7 +36,7 @@ services:
     volumes:
       - /var/log:/var/log
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - ./config/promtail.yml:/etc/promtail/promtail.yml
+      - ./config/promtail-config.yml:/etc/promtail/promtail.yml  # Mount the config file
     command: -config.file=/etc/promtail/promtail.yml
     depends_on:
       - loki

@@ -1,17 +1,19 @@
 # Stage 1: The Builder
 FROM golang:1.25-alpine AS builder
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# 1. Copy the entire source code FIRST to bypass the local Mac cache
+# 1. Copy ONLY the dependency locks first
+COPY go.mod go.sum ./
+
+# 2. Download dependencies (Docker will heavily cache this layer unless go.mod changes)
+RUN go mod download
+
+# 3. Copy the rest of the source code
 COPY . .
 
-# 2. Force the isolated container to scan your code and build the lockfile itself
-RUN go mod tidy
-
-# 3. Compile the Go application into a static binary
-RUN go build -o sentinelsol-daemon ./cmd/sentinelsol/main.go
+# 4. Compile the static binary
+RUN CGO_ENABLED=0 GOOS=linux go build -o sentinelsol-daemon ./cmd/sentinelsol
 
 # Stage 2: The Production Image (Ultra lightweight)
 FROM alpine:latest
