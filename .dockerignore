@@ -1,16 +1,13 @@
-# Git
-.gitignore
+# Git & Secrets (Critical-do not ignore)
 .git
+.gitignore
 .env
+
+# Heavy Local State (huge files)
 test-ledger/
-
-# Go
 vendor/
-go.sum
 
-# OS
+# OS & Editor Junk
 .DS_Store
-
-# Editor
 .vscode/
 .idea/
