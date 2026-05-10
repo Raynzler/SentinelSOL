@@ -7,6 +7,9 @@ services:
       - "6060:6060" # pprof
     environment:
       - RPC_URL=${RPC_URL}
+    depends_on:
+      prometheus:
+        condition: service_healthy
 
   # 2. The Observability Stack
   prometheus:
@@ -14,8 +17,14 @@ services:
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./config/alerts.rules.yml:/etc/prometheus/alerts.rules.yml
+      - prometheus_data:/prometheus
     ports:
-      - "9090:9090"
+      - "9090:9090" # Change host port if already bound locally (e.g., "8080:9090")
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   alertmanager:
     image: prom/alertmanager:latest
@@ -30,7 +39,7 @@ services:
   loki:
     image: grafana/loki:2.9.0
     ports:
-      - "3100:3100"
+      - "3100:3100" # Change host port if already bound locally (e.g., "3101:3100")
     command: -config.file=/etc/loki/local-config.yaml
 
   promtail:
@@ -46,7 +55,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3000:3000"
+      - "3000:3000" # Change host port if already bound locally (e.g., "8080:3000")
     env_file:
       - .env
     environment:
@@ -56,5 +65,10 @@ services:
       - ./config/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
       - ./config/grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
-      - prometheus
-      - loki
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_started
+
+volumes:
+  prometheus_data:
