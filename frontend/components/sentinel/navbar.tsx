@@ -1,14 +1,14 @@
 "use client";
 
-import { Shield } from "lucide-react";
 import Link from "next/link";
+import { SentinelLogo } from "../logo";
 
 export function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
         <div className="flex items-center gap-2">
-          <Shield className="h-5 w-5 text-primary" strokeWidth={1.5} />
+          <SentinelLogo className="h-5 w-5 text-primary" />
           <span className="font-mono text-sm font-semibold tracking-tight text-foreground">
             SentinelSOL
           </span>

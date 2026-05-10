@@ -1,5 +1,6 @@
-import { Github, Linkedin, Shield, Twitter } from "lucide-react";
+import { Github, Linkedin, Twitter } from "lucide-react";
 import Link from "next/link";
+import { SentinelLogo } from "../logo";
 
 const profileLinks = [
   {
@@ -24,7 +25,7 @@ export function Footer() {
     <footer className="border-t border-border">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-10 sm:flex-row">
         <div className="flex items-center gap-2">
-          <Shield className="h-4 w-4 text-primary" strokeWidth={1.5} />
+          <SentinelLogo className="h-4 w-4 text-primary" />
           <span className="font-mono text-sm font-semibold text-foreground">
             SentinelSOL
           </span>

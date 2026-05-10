@@ -8,7 +8,7 @@ export function SentinelLogo({ className = "w-8 h-8 text-red-500" }: { className
       strokeWidth="2" 
       strokeLinecap="round" 
       strokeLinejoin="round" 
-      className="animate-pulse"
+      className={`${className} animate-pulse`}
     >
       {/* The Shield */}
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" className="text-slate-700 dark:text-slate-300" />
