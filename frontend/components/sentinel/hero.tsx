@@ -50,7 +50,9 @@ export function Hero() {
             View on GitHub
           </Link>
           <Link
-            href="#"
+            href="https://github.com/Raynzler/SentinelSOL#readme"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-2 rounded border border-border bg-card px-5 py-2.5 font-mono text-sm font-medium text-foreground transition-colors hover:border-muted-foreground"
           >
             <BookOpen className="h-4 w-4" />

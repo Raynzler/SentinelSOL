@@ -37,7 +37,9 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="#"
+            href="https://github.com/Raynzler/SentinelSOL#readme"
+            target="_blank"
+            rel="noopener noreferrer"
             className="font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
             Docs
