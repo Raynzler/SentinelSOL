@@ -3,6 +3,7 @@ import { Hero } from "@/components/sentinel/hero";
 import { ProblemSolution } from "@/components/sentinel/problem-solution";
 import { Features } from "@/components/sentinel/features";
 import { CodeBlock } from "@/components/sentinel/code-block";
+import { About } from "@/components/sentinel/about";
 import { Footer } from "@/components/sentinel/footer";
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
       <ProblemSolution />
       <Features />
       <CodeBlock />
+      <About />
       <Footer />
     </main>
   );
