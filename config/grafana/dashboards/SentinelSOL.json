@@ -21,6 +21,24 @@
       "targets": [
         { "expr": "sentinelsol_epoch_credits", "refId": "A" }
       ]
+    },
+    {
+      "title": "⚡ Jito: ShredStream Ingestion Latency",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "gridPos": { "h": 10, "w": 12, "x": 0, "y": 10 },
+      "targets": [
+        { "expr": "jito_shred_receive_latency_ms", "refId": "A" }
+      ]
+    },
+    {
+      "title": "⚡ Jito: Block Engine Bundles Accepted",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "gridPos": { "h": 10, "w": 12, "x": 12, "y": 10 },
+      "targets": [
+        { "expr": "rate(jito_bundle_accepted_total[5m])", "refId": "A" }
+      ]
     }
   ]
 }
