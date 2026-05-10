@@ -35,7 +35,7 @@ export function Hero() {
             The Solana Foundation Delegation Program is actively pruning underperforming nodes. Bad performance now equals immediate removal and loss of delegated stake. SentinelSOL was engineered to give operators a predictive edge, catching hardware degradation and network exhaustion before it results in on-chain delinquency and stake-stripping.
           </p>
           <div className="mt-4 flex gap-4 text-sm font-semibold">
-            <a href="https://blockworks.com/news/solana-foundation-pruning-validators-delegation" target="_blank" className="text-red-400 hover:text-red-300 transition-colors">Read the Blockworks Report ↗</a>
+            <a href="https://blockworks.com/news/solana-foundation-pruning-validators-delegation" target="_blank" rel="noopener noreferrer" className="text-red-400 hover:text-red-300 transition-colors">Read the Blockworks Report ↗</a>
           </div>
         </div>
 

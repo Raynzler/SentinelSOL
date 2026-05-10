@@ -8,6 +8,9 @@ test-ledger/
 vendor/
 frontend/
 
+# Dev Tools (not needed in production image)
+tools/
+
 # OS & Editor Junk
 .DS_Store
 .vscode/

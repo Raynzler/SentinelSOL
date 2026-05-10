@@ -4,13 +4,22 @@ services:
     network_mode: "host"
     environment:
       - RPC_URL=${RPC_URL}
+    depends_on:
+      prometheus:
+        condition: service_healthy
 
   prometheus:
     image: prom/prometheus:latest
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./config/alerts.rules.yml:/etc/prometheus/alerts.rules.yml
+      - prometheus_data:/prometheus
     network_mode: "host"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   alertmanager:
     image: prom/alertmanager:latest
@@ -26,7 +35,8 @@ services:
   grafana:
     image: grafana/grafana:latest
     depends_on:
-      - prometheus
+      prometheus:
+        condition: service_healthy
     env_file:
       - .env
     environment:
@@ -36,3 +46,6 @@ services:
       - ./config/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
       - ./config/grafana/dashboards:/var/lib/grafana/dashboards
     network_mode: "host"
+
+volumes:
+  prometheus_data:

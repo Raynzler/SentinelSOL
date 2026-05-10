@@ -78,6 +78,9 @@ SentinelSOL/
 ├── .env.example                # Local configuration template
 ├── docker-compose.yml          # Local orchestrator
 ├── docker-compose.prod.yml     # Out-of-Band (OOB) Server orchestrator
+├── tools/
+│   └── mock-jito/
+│       └── main.go             # Simulated Jito metrics for demo
 ├── Dockerfile                  # Multi-stage Go compilation
 └── Makefile                    # Infrastructure abstraction commands
 ```
@@ -91,8 +94,9 @@ docker-compose up -d --build
 
 | Service | URL |
 |---------|-----|
-| **SentinelSOL Frontend** | `http://localhost:3001` |
 | **Grafana Dashboard** | `http://localhost:3000` |
+| **Prometheus** | `http://localhost:9090` |
+| **SentinelSOL Frontend** | [sentinelsol-sre.vercel.app](https://sentinelsol-sre.vercel.app/) |
 
 **Full setup:**
 
