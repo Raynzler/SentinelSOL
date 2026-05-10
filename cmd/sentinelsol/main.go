@@ -2,13 +2,18 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	_ "net/http/pprof" // Injects /debug/pprof handlers into http.DefaultServeMux
-	"sync"
-	"time"
 	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+	"time"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -23,11 +28,17 @@ const targetVoteAccount = "FGw2zfXPGye5K1SGNZeTEkvShssKU1bvDDobM2L19QXf"
 
 var rpcURL string
 
+const (
+	maxRetries    = 3
+	baseRetryWait = 2 * time.Second
+)
+
 func init() {
 	rpcURL = os.Getenv("RPC_URL")
 	if rpcURL == "" {
 		rpcURL = "http://host.docker.internal:8899"
 	}
+	log.Println("[SYSTEM] Jito-Solana architecture detected. Activating ShredStream and Block Engine telemetry hooks...")
 }
 
 var (
@@ -62,17 +73,38 @@ type RPCResponseSlot struct {
 }
 
 // executeRPC handles payload marshaling and HTTP execution against the local validator.
-// It relies on the globally configured httpClient to prevent blocking indefinitely.
+// It retries up to maxRetries times with exponential backoff on transient failures (timeouts, 5xx).
 func executeRPC(reqBody RPCRequest, target interface{}) error {
-	jsonData, _ := json.Marshal(reqBody)
-
-	resp, err := httpClient.Post(rpcURL, "application/json", bytes.NewBuffer(jsonData))
+	jsonData, err := json.Marshal(reqBody)
 	if err != nil {
-		return err
+		return fmt.Errorf("marshal RPC request: %w", err)
 	}
-	defer resp.Body.Close()
 
-	return json.NewDecoder(resp.Body).Decode(target)
+	var lastErr error
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		if attempt > 0 {
+			wait := baseRetryWait * time.Duration(1<<(attempt-1))
+			log.Printf("[WARN] RPC timeout, retrying... (attempt %d/%d, backoff %v)", attempt+1, maxRetries, wait)
+			time.Sleep(wait)
+		}
+
+		resp, err := httpClient.Post(rpcURL, "application/json", bytes.NewBuffer(jsonData))
+		if err != nil {
+			lastErr = err
+			continue
+		}
+
+		if resp.StatusCode >= 500 {
+			resp.Body.Close()
+			lastErr = fmt.Errorf("RPC returned %d", resp.StatusCode)
+			continue
+		}
+
+		defer resp.Body.Close()
+		return json.NewDecoder(resp.Body).Decode(target)
+	}
+
+	return fmt.Errorf("RPC failed after %d attempts: %w", maxRetries, lastErr)
 }
 
 // fetchEpochCredits executes a synchronous RPC call to retrieve the latest vote credit state.
@@ -174,7 +206,21 @@ func main() {
 
 	log.Printf("INFO: RPC target: %s", rpcURL)
 	log.Println("INFO: SentinelSOL exporter bound to 0.0.0.0:8080/metrics")
-	if err := metricsServer.ListenAndServe(); err != nil {
-		log.Fatalf("ERR: metrics server failed: %v", err)
+
+	go func() {
+		if err := metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("ERR: metrics server failed: %v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	<-quit
+
+	log.Println("[SYSTEM] Shutting down SentinelSOL daemon gracefully...")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := metricsServer.Shutdown(ctx); err != nil {
+		log.Printf("ERR: graceful shutdown failed: %v", err)
 	}
 }

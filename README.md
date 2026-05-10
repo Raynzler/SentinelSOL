@@ -48,6 +48,19 @@ The architecture is completely environment-agnostic: operators inject an `RPC_UR
 
 ---
 
+## 🏗️ Advanced Architecture: True Out-of-Band (OOB) Deployment
+
+To achieve zero-trust reliability, SentinelSOL is designed to run Out-of-Band. Instead of consuming CPU cycles on a high-performance bare-metal validator, operators can deploy this Docker stack on an isolated $5 VPS and point the `RPC_URL` to their validator's secure tunnel. This guarantees that if the validator experiences a kernel panic or severe network DDoS, the observability stack survives to trigger SRE alerts.
+
+Configure OOB mode in your `.env`:
+```bash
+RPC_URL=http://<VALIDATOR_IP>:8899
+```
+
+See `.env.example` for the full deployment mode reference.
+
+---
+
 ## 📂 Project Structure
 
 ```text
@@ -70,6 +83,18 @@ SentinelSOL/
 ```
 
 ## ⚡ Quickstart Guide
+
+**One-liner deploy:**
+```bash
+docker-compose up -d --build
+```
+
+| Service | URL |
+|---------|-----|
+| **SentinelSOL Frontend** | `http://localhost:3001` |
+| **Grafana Dashboard** | `http://localhost:3000` |
+
+**Full setup:**
 
 1. **Phase 1: Telegram Routing**  
    Message **@BotFather** on Telegram to create a bot and get the Bot Token. Message **@userinfobot** to get the Chat ID.
