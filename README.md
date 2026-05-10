@@ -6,6 +6,15 @@
 
 ![SentinelSOL Dashboard](./frontend/public/dashboard.jpg)
 
+## 📜 The Genesis: Surviving the Prune
+The era of 'set and forget' validation on Solana is over. Recently, the Solana Foundation Delegation Program (SFDP) shifted from blindly incentivizing decentralization to ruthlessly enforcing node performance. With the introduction of the 3-to-1 pruning rule and active stake-stripping for delinquency, a node's profitability is now entirely dependent on its uptime and Timely Vote Credits (TVC).
+
+SentinelSOL was built because traditional alerting is too slow to save your delegated stake in this unforgiving performance paradigm. You cannot afford to wait for a crash; you have to predict the degradation.
+
+**Context & Receipts:**
+* [The Solana Foundation Delegation Program Case Study (Phase II)](https://solana.com/news/solana-foundation-delegation-program-case-study)
+* [Blockworks: Solana Foundation begins pruning validators from delegation program](https://blockworks.com/news/solana-foundation-pruning-validators-delegation)
+
 ---
 
 ## 🛑 The Problem: Silent Delinquency

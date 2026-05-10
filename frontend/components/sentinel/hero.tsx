@@ -27,6 +27,18 @@ export function Hero() {
           epoch returns. Zero external API fees, zero bloat.
         </p>
 
+        <div className="mt-12 bg-red-900/10 border border-red-500/20 rounded-lg p-6 max-w-3xl mx-auto">
+          <h3 className="text-xl font-bold text-red-400 mb-2">
+            The Motivation: The SFDP Validator Prune
+          </h3>
+          <p className="text-slate-300 leading-relaxed">
+            The Solana Foundation Delegation Program is actively pruning underperforming nodes. Bad performance now equals immediate removal and loss of delegated stake. SentinelSOL was engineered to give operators a predictive edge—catching hardware degradation and network exhaustion before it results in on-chain delinquency and stake-stripping.
+          </p>
+          <div className="mt-4 flex gap-4 text-sm font-semibold">
+            <a href="https://blockworks.com/news/solana-foundation-pruning-validators-delegation" target="_blank" className="text-red-400 hover:text-red-300 transition-colors">Read the Blockworks Report ↗</a>
+          </div>
+        </div>
+
         <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <Link
             href="https://github.com/Raynzler/SentinelSOL"
