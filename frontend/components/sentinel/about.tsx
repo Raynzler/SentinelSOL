@@ -21,7 +21,7 @@ export function About() {
               telemetry layer. By predicting hardware exhaustion and monitoring
               ShredStream latency, it protects operators from stake pruning and
               Jito MEV loss before failures occur. Built for the Colosseum
-              Frontier Hackathon.
+              Hackathon 2026.
             </p>
           </div>
         </div>
