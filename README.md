@@ -4,6 +4,8 @@
 
 *Built for the Colosseum Hackathon 2026*
 
+![SentinelSOL Dashboard](./frontend/public/dashboard.jpg)
+
 ---
 
 ## 🛑 The Problem: Silent Delinquency
@@ -20,38 +22,62 @@ Catch the degradation. Save the revenue.
 
 ---
 
-## 🏗️ Architecture Topology
+## 🏗️ Architecture
 
-SentinelSOL completely decouples the extraction, logic, and alerting layers to ensure enterprise-grade fault tolerance.
+SentinelSOL decouples the extraction, logic, and alerting layers to ensure high availability and clean separation of concerns.
 
-1. **The Network:** Local `solana-test-validator` emitting JSON-RPC data.
-2. **The Extractor (Golang):** A highly concurrent daemon utilizing Goroutines to fetch Epoch Credits and Slot Height at the exact same millisecond to prevent time-drift.
-3. **The Brain (Prometheus):** A time-series database executing mathematical evaluations (Z-Scores) against historical baselines.
-4. **The Router (Alertmanager):** Handles alert deduplication, rate-limiting, and secure webhook delivery.
-5. **The Action (Telegram Bot API):** Native mobile paging via SentinelBot.
-6. **The Visualizer (Grafana / GitOps):** Real-time UI dashboarding, fully provisioned via Dashboards-as-Code.
+The architecture is completely environment-agnostic: operators inject an `RPC_URL` environment variable to target any Solana RPC source. That can be a local `solana-test-validator` for out-of-band extraction during development, or a dedicated Mainnet RPC node such as Helius for live production monitoring.
+
+* **Solana Node:** Local `solana-test-validator` emitting JSON-RPC telemetry.
+* **Go Extractor:** A concurrent daemon fetching Epoch Credits and Slot Height synchronously to prevent metric time-drift.
+* **Prometheus:** Time-series database executing Z-Score anomaly detection against historical baselines.
+* **Alertmanager:** Handles alert deduplication, rate-limiting, and webhook routing.
+* **Telegram API:** Native mobile paging via SentinelBot.
+* **Grafana:** Real-time UI dashboarding, fully provisioned via Dashboards-as-Code.
 
 ---
 
 ## 📂 Project Structure
 
-Infrastructure-as-Code (IaC) design pattern.
 ```text
 SentinelSOL/
-├── .github/                    # Dependabot CI & Issue/PR Templates
+├── .github/                    # CI & Issue/PR Templates
 ├── cmd/
 │   └── sentinelsol/
-│       └── main.go             # The Concurrent Go Daemon
+│       └── main.go             # Concurrent Go Daemon
 ├── config/
 │   ├── alertmanager.yml        # Webhook & Routing Logic
 │   ├── alerts.rules.yml        # Predictive Z-Score PromQL Math
 │   ├── grafana/                # GitOps: Dashboards-as-Code
 │   └── prometheus.yml          # Scrape Configs
-├── .dockerignore               # Container optimization
-├── .editorconfig               # IDE formatting enforcement
+├── .dockerignore               # Container build optimization
 ├── .env.example                # Local configuration template
 ├── docker-compose.yml          # Local orchestrator
 ├── docker-compose.prod.yml     # Out-of-Band (OOB) Server orchestrator
 ├── Dockerfile                  # Multi-stage Go compilation
-├── LICENSE                     # MIT License
 └── Makefile                    # Infrastructure abstraction commands
+```
+
+## ⚡ Quickstart Guide
+
+1. **Phase 1: Telegram Routing**  
+   Message **@BotFather** on Telegram to create a bot and get the Bot Token. Message **@userinfobot** to get the Chat ID.
+2. **Phase 2: Environment**  
+   Copy the template and inject runtime credentials:
+   ```bash
+   cp .env.example .env
+   ```
+   Populate `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, and `GRAFANA_ADMIN_PASSWORD` in `.env`.
+3. **Phase 3: Boot**  
+   Build and launch the isolated Docker network:
+   ```bash
+   make up
+   ```
+   Open `http://localhost:3000` to view SentinelSOL telemetry.
+
+## 🚀 Future Roadmap
+
+- **Enterprise Paging:** Webhook integrations for PagerDuty and Opsgenie for strict on-call escalation policies.
+- **Twilio SMS Fallback:** Redundant SMS alerts if the Telegram API rate-limits or drops.
+- **Predictive Disk Exhaustion:** Adding eBPF kernel tracing to predict ledger storage saturation before the validator OS halts.
+- **Automated Chaos Testing:** Comprehensive Go unit tests and network-partition chaos experiments to validate the alerting pipeline under stress. This was scoped for Phase 2 so the core Z-Score prediction engine could be perfected during the hackathon sprint.

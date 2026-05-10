@@ -48,7 +48,7 @@ export function Navbar() {
             rel="noopener noreferrer"
             className="rounded border border-primary bg-primary px-3 py-1.5 font-mono text-xs font-medium text-primary-foreground transition-opacity hover:opacity-90"
           >
-            GitHub
+            View on GitHub
           </Link>
         </div>
       </div>

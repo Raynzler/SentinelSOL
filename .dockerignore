@@ -6,6 +6,7 @@
 # Heavy Local State (huge files)
 test-ledger/
 vendor/
+frontend/
 
 # OS & Editor Junk
 .DS_Store

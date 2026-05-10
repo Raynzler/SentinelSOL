@@ -8,7 +8,7 @@ import (
 	_ "net/http/pprof" // Injects /debug/pprof handlers into http.DefaultServeMux
 	"sync"
 	"time"
-
+	"os"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -145,25 +145,18 @@ func recordMetrics() {
 }
 
 func main() {
-	// 1. Isolate the diagnostic server strictly to the loopback interface.
-	// This prevents memory profiles from leaking to the public internet while
-	// still allowing local SRE debugging via http://127.0.0.1:6060/debug/pprof
 	go func() {
-		log.Println("SYS: Internal pprof profiling active on 127.0.0.1:6060")
+		log.Println("INFO: pprof profiling active on 127.0.0.1:6060")
 		if err := http.ListenAndServe("127.0.0.1:6060", nil); err != nil {
-			log.Fatalf("FATAL: pprof listener collapsed: %v", err)
+			log.Fatalf("ERR: pprof listener failed: %v", err)
 		}
 	}()
 
-	// 2. Initialize asynchronous metric scraping daemon
 	recordMetrics()
 
-	// 3. Instantiate an isolated multiplexer for the metrics server.
-	// This ensures the public 8080 port does not inherit the DefaultServeMux pprof endpoints.
 	metricsMux := http.NewServeMux()
 	metricsMux.Handle("/metrics", promhttp.Handler())
 
-	// 4. Define explicit server boundaries to prevent slow-loris attacks and connection hangs.
 	metricsServer := &http.Server{
 		Addr:         ":8080",
 		Handler:      metricsMux,
@@ -171,8 +164,13 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 	}
 
-	log.Println("SYS: SentinelSOL Exporter bound to 0.0.0.0:8080/metrics")
+	rpcURL := os.Getenv("RPC_URL")
+if rpcURL == "" {
+    rpcURL = "http://localhost:8899" // Fallback safety
+}
+
+	log.Println("INFO: SentinelSOL exporter bound to 0.0.0.0:8080/metrics")
 	if err := metricsServer.ListenAndServe(); err != nil {
-		log.Fatalf("FATAL: Metrics server collapsed: %v", err)
+		log.Fatalf("ERR: metrics server failed: %v", err)
 	}
 }

@@ -95,7 +95,7 @@ export function CodeBlock() {
               <div className="flex items-center gap-2">
                 <Code2 className="h-4 w-4 text-primary" strokeWidth={1.5} />
                 <span className="font-mono text-xs text-muted-foreground">
-                  go1.22 · linux/amd64
+                  go 1.25.3 · linux/amd64
                 </span>
               </div>
               <div className="h-4 w-px bg-border" />

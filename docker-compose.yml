@@ -5,6 +5,8 @@ services:
     ports:
       - "8080:8080" # Metrics
       - "6060:6060" # pprof
+    environment:
+      - RPC_URL=${RPC_URL}
 
   # 2. The Observability Stack
   prometheus:
@@ -21,7 +23,7 @@ services:
       - .env
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--config.expand-env'  # This is the magic flag
+      - '--config.expand-env'
     volumes:
       - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
 

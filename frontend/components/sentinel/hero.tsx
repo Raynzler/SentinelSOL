@@ -1,4 +1,5 @@
-import { Github, BookOpen, ImageIcon } from "lucide-react";
+import Image from "next/image";
+import { Github, BookOpen } from "lucide-react";
 import Link from "next/link";
 
 export function Hero() {
@@ -28,7 +29,7 @@ export function Hero() {
 
         <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <Link
-            href="https://github.com"
+            href="https://github.com/Raynzler/SentinelSOL"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 rounded border border-primary bg-primary px-5 py-2.5 font-mono text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
@@ -48,7 +49,7 @@ export function Hero() {
 
       {/* Dashboard placeholder */}
       <div className="relative z-10 mx-auto mt-16 w-full max-w-5xl">
-        <div className="rounded-lg border border-border bg-card p-1 shadow-2xl">
+        <div className="overflow-hidden rounded-lg border border-border/80 bg-card/80 p-1 shadow-2xl shadow-black/40 ring-1 ring-white/5">
           {/* Fake window chrome */}
           <div className="flex items-center gap-1.5 border-b border-border px-4 py-2.5">
             <span className="h-2.5 w-2.5 rounded-full bg-muted" />
@@ -58,33 +59,17 @@ export function Hero() {
               sentinel-dashboard — Grafana
             </span>
           </div>
-          <div className="flex aspect-[16/9] flex-col items-center justify-center gap-4 rounded-b bg-[oklch(0.08_0_0)]">
-            <div className="flex flex-col items-center gap-3 opacity-30">
-              <ImageIcon className="h-10 w-10 text-primary" strokeWidth={1} />
-              <span className="font-mono text-xs text-muted-foreground">
-                Drop your Grafana screenshot here
-              </span>
-            </div>
-            {/* Mock chart lines */}
-            <svg
-              className="absolute inset-0 h-full w-full opacity-10"
-              viewBox="0 0 800 450"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <polyline
-                fill="none"
-                stroke="oklch(0.55 0.11 40)"
-                strokeWidth="1.5"
-                points="0,300 80,280 160,260 200,220 240,240 300,180 360,160 420,140 480,120 520,160 580,100 640,80 720,60 800,40"
-              />
-              <polyline
-                fill="none"
-                stroke="oklch(0.60 0.06 40)"
-                strokeWidth="1"
-                points="0,380 100,360 200,350 300,340 380,320 440,300 520,280 600,300 700,260 800,240"
-              />
-            </svg>
+          <div className="relative overflow-hidden rounded-b bg-[oklch(0.08_0_0)]">
+            <Image
+              src="/dashboard.jpg"
+              alt="SentinelSOL Grafana dashboard showing validator observability metrics"
+              width={2292}
+              height={1076}
+              priority
+              sizes="(min-width: 1024px) 1024px, calc(100vw - 48px)"
+              className="h-auto w-full object-cover"
+            />
+            <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/5" />
           </div>
         </div>
       </div>
