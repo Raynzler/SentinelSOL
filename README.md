@@ -2,7 +2,7 @@
 
 **Predictive SRE Observability Pipeline for Solana Validators**
 
-🔴 Live Demo & Next.js Frontend: [sentinelsol-sre.vercel.app](https://sentinelsol-sre.vercel.app/
+🔴 Live Demo & Next.js Frontend: https://sentinelsol-sre.vercel.app/
 
 *Built for the Colosseum Hackathon 2026*
 
