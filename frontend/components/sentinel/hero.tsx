@@ -32,7 +32,7 @@ export function Hero() {
             The Motivation: The SFDP Validator Prune
           </h3>
           <p className="text-slate-300 leading-relaxed">
-            The Solana Foundation Delegation Program is actively pruning underperforming nodes. Bad performance now equals immediate removal and loss of delegated stake. SentinelSOL was engineered to give operators a predictive edge—catching hardware degradation and network exhaustion before it results in on-chain delinquency and stake-stripping.
+            The Solana Foundation Delegation Program is actively pruning underperforming nodes. Bad performance now equals immediate removal and loss of delegated stake. SentinelSOL was engineered to give operators a predictive edge, catching hardware degradation and network exhaustion before it results in on-chain delinquency and stake-stripping.
           </p>
           <div className="mt-4 flex gap-4 text-sm font-semibold">
             <a href="https://blockworks.com/news/solana-foundation-pruning-validators-delegation" target="_blank" className="text-red-400 hover:text-red-300 transition-colors">Read the Blockworks Report ↗</a>
@@ -70,7 +70,7 @@ export function Hero() {
             <span className="h-2.5 w-2.5 rounded-full bg-muted" />
             <span className="h-2.5 w-2.5 rounded-full bg-muted" />
             <span className="ml-3 font-mono text-xs text-muted-foreground">
-              sentinel-dashboard — Grafana
+              sentinel-dashboard - Grafana
             </span>
           </div>
           <div className="relative overflow-hidden rounded-b bg-[oklch(0.08_0_0)]">

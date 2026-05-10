@@ -88,7 +88,7 @@ export function CodeBlock() {
             <p className="mt-4 leading-relaxed text-muted-foreground">
               The extractor polls your local RPC endpoint on a tight ticker,
               computes a rolling z-score over vote-velocity deltas, and pushes
-              metrics to a local Prometheus exporter — all in a single
+              metrics to a local Prometheus exporter - all in a single
               self-contained binary you can audit line-by-line.
             </p>
             <div className="mt-8 flex items-center gap-4">
