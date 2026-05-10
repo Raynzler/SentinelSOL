@@ -32,7 +32,7 @@ export function ProblemSolution() {
               Relying on external third-party monitors means by the time an
               alert fires, you have already lost vote credits. Latency inherent
               to cloud-based polling puts your performance metrics behind
-              reality by minutes — minutes that cost you.
+              reality by minutes, minutes that cost you.
             </p>
             <div className="mt-8 border-l-2 border-border pl-4">
               <p className="font-mono text-xs text-muted-foreground">

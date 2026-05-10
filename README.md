@@ -11,7 +11,7 @@
 ## 📜 The Genesis: Surviving the Prune
 The era of 'set and forget' validation on Solana is over. Recently, the Solana Foundation Delegation Program (SFDP) shifted from blindly incentivizing decentralization to ruthlessly enforcing node performance. With the introduction of the 3-to-1 pruning rule and active stake-stripping for delinquency, a node's profitability is now entirely dependent on its uptime and Timely Vote Credits (TVC).
 
-SentinelSOL was built because traditional alerting is too slow to save your delegated stake in this unforgiving performance paradigm. You cannot afford to wait for a crash; you have to predict the degradation.
+SentinelSOL was built because traditional alerting is too slow to save your delegated stake in this performance regime. You cannot afford to wait for a crash; you have to predict the degradation.
 
 **Context & Receipts:**
 * [The Solana Foundation Delegation Program Case Study (Phase II)](https://solana.com/news/solana-foundation-delegation-program-case-study)
@@ -91,4 +91,4 @@ SentinelSOL/
 - **Enterprise Paging:** Webhook integrations for PagerDuty and Opsgenie for strict on-call escalation policies.
 - **Twilio SMS Fallback:** Redundant SMS alerts if the Telegram API rate-limits or drops.
 - **Predictive Disk Exhaustion:** Adding eBPF kernel tracing to predict ledger storage saturation before the validator OS halts.
-- **Automated Chaos Testing:** Comprehensive Go unit tests and network-partition chaos experiments to validate the alerting pipeline under stress. This was scoped for Phase 2 so the core Z-Score prediction engine could be perfected during the hackathon sprint.
+- **Automated Chaos Testing:** Full-coverage Go unit tests and network-partition chaos experiments to validate the alerting pipeline under stress. This was scoped for Phase 2 so the core Z-Score prediction engine could be locked in during the hackathon sprint.

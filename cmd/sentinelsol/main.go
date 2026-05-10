@@ -20,7 +20,15 @@ var httpClient = &http.Client{
 }
 
 const targetVoteAccount = "FGw2zfXPGye5K1SGNZeTEkvShssKU1bvDDobM2L19QXf"
-const rpcURL = "http://host.docker.internal:8899"
+
+var rpcURL string
+
+func init() {
+	rpcURL = os.Getenv("RPC_URL")
+	if rpcURL == "" {
+		rpcURL = "http://host.docker.internal:8899"
+	}
+}
 
 var (
 	epochCreditsMetric = promauto.NewGauge(prometheus.GaugeOpts{
@@ -164,11 +172,7 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 	}
 
-	rpcURL := os.Getenv("RPC_URL")
-if rpcURL == "" {
-    rpcURL = "http://localhost:8899" // Fallback safety
-}
-
+	log.Printf("INFO: RPC target: %s", rpcURL)
 	log.Println("INFO: SentinelSOL exporter bound to 0.0.0.0:8080/metrics")
 	if err := metricsServer.ListenAndServe(); err != nil {
 		log.Fatalf("ERR: metrics server failed: %v", err)

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'SentinelSOL — Predictive Observability for Solana Validators',
+  title: 'SentinelSOL - Predictive Observability for Solana Validators',
   description: 'An 8MB sidecar that detects node degradation before it impacts your epoch returns. Zero external API fees, zero bloat.',
   icons: {
     icon: '/favicon.svg',
