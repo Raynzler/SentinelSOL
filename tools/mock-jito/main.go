@@ -4,8 +4,7 @@
 //
 //   - job_name: 'jito_mock'
 //     static_configs:
-//       - targets: ['host.docker.internal:8081']
-//
+//   - targets: ['host.docker.internal:8081']
 package main
 
 import (
@@ -38,7 +37,7 @@ func init() {
 func main() {
 	go func() {
 		for {
-			v := 20.0 + rand.Float64()*130.0
+			v := 300.0 + rand.Float64()*500.0
 			shredLatency.Set(v)
 			time.Sleep(2 * time.Second)
 		}

@@ -1,11 +1,17 @@
 groups:
   - name: sentinelsol_predictive_alerts
     rules:
-      # 1. Continuous Recording Rule: Track the absolute velocity of vote credits
+      # =====================================================================
+      # 1. TOTAL VOTE CREDIT (TVC) ANOMALY DETECTION (Standard Validators)
+      # =====================================================================
+      
+      # Continuous Recording Rule: Track the absolute velocity of vote credits
+      # This creates a synthetic metric that is much cheaper for Prometheus to query.
       - record: instance:vote_velocity:rate1m
         expr: rate(sentinelsol_epoch_credits[1m])
 
-      # 2. The Predictive Alert: Trigger if vote velocity falls 3 sigmas below the 1-hour norm
+      # The Predictive Alert: Trigger if vote velocity falls 3 sigmas below the 1-hour norm.
+      # This catches silent hardware exhaustion *before* the node is marked delinquent.
       - alert: TVCDegradation_Anomaly
         expr: >
           (
@@ -13,10 +19,27 @@ groups:
             - avg_over_time(instance:vote_velocity:rate1m[1h])
           ) 
           / stddev_over_time(instance:vote_velocity:rate1m[1h]) < -3
-        # Wait 2 minutes to ensure this isn't just a brief network stutter
+        # Wait 2 minutes to ensure this isn't just a brief UDP packet drop
         for: 2m
         labels:
           severity: critical
         annotations:
           summary: "Consensus Degradation Detected on {{ $labels.instance }}"
           description: "Validator vote velocity has plummeted 3 standard deviations below its 1-hour baseline. The node is failing to participate in consensus."
+
+      # =====================================================================
+      # 2. JITO-NATIVE MEV PROTECTION (Hackathon Demo Target)
+      # =====================================================================
+      
+      # The Revenue Protector: Alerts when ShredStream Ingestion Latency spikes.
+      # If this crosses 400ms, the Block Engine will likely start rejecting bundles.
+      - alert: ShredStreamLatencySpike
+        expr: jito_shred_receive_latency_ms > 300
+        # DEMO MODE: Set to 15 seconds so the alert fires quickly during the video pitch.
+        # In a real production environment, this would be set to 1m or 2m.
+        for: 15s
+        labels:
+          severity: critical
+        annotations:
+          summary: "🚨 Predictive Degradation Detected 🚨"
+          description: "ShredStream latency spiked to {{ $value }}ms. Jito node is at risk of dropping consensus and forfeiting MEV tips."

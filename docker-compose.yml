@@ -28,13 +28,22 @@ services:
 
   alertmanager:
     image: prom/alertmanager:latest
+    container_name: sentinelsol-alertmanager-1
+    ports:
+      - "9093:9093"
     env_file:
       - .env
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--config.expand-env'
+    # Mount the raw config as a read-only template
     volumes:
-      - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml.template:ro
+    entrypoint: [ "/bin/sh", "-c" ]
+    # Safely swap vars and write to /tmp (writable by 'nobody' user)
+    command:
+      - |
+        sed -e 's|\$${TELEGRAM_CHAT_ID}|'$$TELEGRAM_CHAT_ID'|g' \
+            -e 's|\$${TELEGRAM_BOT_TOKEN}|'$$TELEGRAM_BOT_TOKEN'|g' \
+            /etc/alertmanager/alertmanager.yml.template > /tmp/alertmanager_parsed.yml
+        /bin/alertmanager --config.file=/tmp/alertmanager_parsed.yml
 
   loki:
     image: grafana/loki:2.9.0
