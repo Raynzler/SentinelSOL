@@ -6,7 +6,7 @@
 
 *Built for the Colosseum Hackathon 2026*
 
-![SentinelSOL Dashboard](./frontend/public/dashboard.jpg)
+![SentinelSOL Dashboard](./frontend/public/graphs.jpg)
 
 ## 📜 The Genesis: Surviving the Prune
 The era of 'set and forget' validation on Solana is over. Recently, the Solana Foundation Delegation Program (SFDP) shifted from blindly incentivizing decentralization to ruthlessly enforcing node performance. With the introduction of the 3-to-1 pruning rule and active stake-stripping for delinquency, a node's profitability is now entirely dependent on its uptime and Timely Vote Credits (TVC).
