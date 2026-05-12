@@ -1,4 +1,6 @@
 # SentinelSOL 🛡️
+![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat&logo=docker)
 
 **Predictive SRE Observability Pipeline for Solana Validators**
 
