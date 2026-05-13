@@ -13,6 +13,7 @@ services:
 
   # 2. The Observability Stack
   prometheus:
+    restart: unless-stopped
     image: prom/prometheus:latest
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -27,6 +28,7 @@ services:
       retries: 3
 
   alertmanager:
+    restart: unless-stopped
     image: prom/alertmanager:latest
     container_name: sentinelsol-alertmanager-1
     ports:
@@ -62,6 +64,7 @@ services:
       - loki
 
   grafana:
+    restart: unless-stopped
     image: grafana/grafana:latest
     ports:
       - "3000:3000" # Change host port if already bound locally (e.g., "8080:3000")
