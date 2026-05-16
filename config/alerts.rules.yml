@@ -41,5 +41,5 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "🚨 Predictive Degradation Detected 🚨"
+          summary: "🚨 Warning - Predictive Degradation Detected 🚨"
           description: "ShredStream latency spiked to {{ $value }}ms. Jito node is at risk of dropping consensus and forfeiting MEV tips."
