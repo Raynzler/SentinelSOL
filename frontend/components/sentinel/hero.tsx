@@ -75,8 +75,8 @@ export function Hero() {
           </div>
           <div className="relative overflow-hidden rounded-b bg-[oklch(0.08_0_0)]">
             <Image
-              src="/graphs.jpg"
-              alt="SentinelSOL Grafana dashboard showing validator observability metrics"
+              src="/dashboard.jpg"
+              alt="SentinelSOL Grafana dashboard showing node slot progression and absolute vote credit panels"
               width={2292}
               height={1076}
               priority

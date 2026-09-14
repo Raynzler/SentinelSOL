@@ -14,14 +14,18 @@ export function About() {
         <div className="mx-auto max-w-3xl">
           <div className="border-l-2 border-primary/40 pl-6">
             <p className="leading-relaxed text-muted-foreground">
-              Built by Hamza - SRE & DevOps Engineer. When analyzing the Solana
-              ecosystem from a reliability perspective, a critical gap became
-              apparent: existing validator observability is entirely reactive.
-              SentinelSOL was engineered as a proactive, out-of-band capable
-              telemetry layer. By predicting hardware exhaustion and monitoring
-              ShredStream latency, it protects operators from stake pruning and
-              Jito MEV loss before failures occur. Built for the Colosseum
-              Hackathon 2026.
+              Built by Hamza Shaikh - Site Reliability, DevOps and Cloud
+              Infrastructure - with a second contributor. When analyzing the
+              Solana ecosystem from a reliability perspective, a critical gap
+              became apparent: existing validator observability is entirely
+              reactive. SentinelSOL runs as a separate process from the
+              validator, with a configurable RPC endpoint so it can be deployed
+              on an isolated host. It polls the validator over Solana JSON-RPC
+              for vote-credit accrual and slot progression, then applies
+              3-sigma Z-score anomaly detection over a rolling one-hour
+              baseline to surface degradation before on-chain delinquency.
+              Winner, Superteam Germany / neosfer Solana Ideathon, Frankfurt
+              2026; also submitted to the Colosseum Frontier hackathon.
             </p>
           </div>
         </div>
