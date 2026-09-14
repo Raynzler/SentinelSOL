@@ -25,7 +25,7 @@ SentinelSOL was built because traditional alerting is too slow to save your dele
 Current Solana validator monitoring tools act as "Check Engine" lights that only illuminate when the engine is already on fire. Operators rely on absolute thresholds (e.g., node offline, port closed). By the time these alerts fire, the validator is already delinquent, missing votes, and actively losing revenue.
 
 ## 🟢 The Solution: Statistical Anomaly Detection
-SentinelSOL is an out-of-band (OOB) observability pipeline that detects hardware and network exhaustion *before* it results in on-chain delinquency. 
+SentinelSOL is a separate-process observability pipeline that detects hardware and network exhaustion *before* it results in on-chain delinquency. 
 
 Instead of waiting for the node to crash, our Golang extraction engine tracks the velocity of **Timely Vote Credits (TVC)** relative to the absolute **Slot Processing Height** in real-time. By utilizing PromQL mathematics, SentinelSOL establishes a rolling 1-hour performance baseline. 
 
@@ -39,7 +39,7 @@ Catch the degradation. Save the revenue.
 
 SentinelSOL decouples the extraction, logic, and alerting layers to ensure high availability and clean separation of concerns.
 
-The architecture is completely environment-agnostic: operators inject an `RPC_URL` environment variable to target any Solana RPC source. That can be a local `solana-test-validator` for out-of-band extraction during development, or a dedicated Mainnet RPC node such as Helius for live production monitoring.
+The architecture is completely environment-agnostic: operators inject an `RPC_URL` environment variable to target any Solana RPC source. That can be a local `solana-test-validator` during development, or a dedicated Mainnet RPC node such as Helius for live monitoring.
 
 * **Solana Node:** Local `solana-test-validator` emitting JSON-RPC telemetry.
 * **Go Extractor:** A concurrent daemon fetching Epoch Credits and Slot Height synchronously to prevent metric time-drift.
@@ -50,11 +50,11 @@ The architecture is completely environment-agnostic: operators inject an `RPC_UR
 
 ---
 
-## 🏗️ Advanced Architecture: True Out-of-Band (OOB) Deployment
+## 🏗️ Optional Architecture: Isolated-Host Deployment
 
-To achieve zero-trust reliability, SentinelSOL is designed to run Out-of-Band. Instead of consuming CPU cycles on a high-performance bare-metal validator, operators can deploy this Docker stack on an isolated $5 VPS and point the `RPC_URL` to their validator's secure tunnel. This guarantees that if the validator experiences a kernel panic or severe network DDoS, the observability stack survives to trigger SRE alerts.
+By default the stack runs on the same host as the validator: `RPC_URL` points at `host.docker.internal:8899` and `docker-compose.prod.yml` uses `network_mode: host`. Because the RPC endpoint is configurable, operators can instead deploy this Docker stack on an isolated VPS and point `RPC_URL` at their validator's secure tunnel. On that topology the observability stack survives a kernel panic or network saturation on the validator itself. This is a supported deployment option, not the default.
 
-Configure OOB mode in your `.env`:
+Configure isolated-host mode in your `.env`:
 ```bash
 RPC_URL=http://<VALIDATOR_IP>:8899
 ```
@@ -79,10 +79,10 @@ SentinelSOL/
 ├── .dockerignore               # Container build optimization
 ├── .env.example                # Local configuration template
 ├── docker-compose.yml          # Local orchestrator
-├── docker-compose.prod.yml     # Out-of-Band (OOB) Server orchestrator
+├── docker-compose.prod.yml     # Isolated-host / remote-RPC orchestrator
 ├── tools/
 │   └── mock-jito/
-│       └── main.go             # Simulated Jito metrics for demo
+│       └── main.go             # Simulated Jito metrics, demo only (rand, not real telemetry)
 ├── Dockerfile                  # Multi-stage Go compilation
 └── Makefile                    # Infrastructure abstraction commands
 ```
