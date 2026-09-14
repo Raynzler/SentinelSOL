@@ -3,10 +3,10 @@ import { Cpu, Wifi, Terminal } from "lucide-react";
 const features = [
   {
     icon: Cpu,
-    metric: "8MB",
-    label: "Peak Footprint",
+    metric: "12MB",
+    label: "Static Binary",
     description:
-      "Written in raw Go, idling at 2MB. No JVM, no interpreter, no runtime overhead stealing cycles from your validator.",
+      "A single statically linked Go binary. No JVM, no interpreter, no runtime to install alongside your validator.",
     tag: "go binary",
   },
   {
@@ -14,7 +14,7 @@ const features = [
     metric: "$0",
     label: "Egress Fees",
     description:
-      "Local RPC scraping means no cloud bandwidth charges. Your telemetry never leaves the machine unless you want it to.",
+      "Polling your own RPC endpoint means no cloud bandwidth charges and no metered third-party data API in the collection path.",
     tag: "local-first",
   },
   {

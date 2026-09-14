@@ -17,14 +17,15 @@ export function Hero() {
         </div>
 
         <h1 className="mb-5 text-balance text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-          Zero-footprint, predictive{" "}
+          Separate-process{" "}
           <span className="text-primary">observability</span> for Solana
           validators.
         </h1>
 
         <p className="mx-auto mb-10 max-w-xl text-balance text-base leading-relaxed text-muted-foreground">
-          An 8MB sidecar that detects node degradation before it impacts your
-          epoch returns. Zero external API fees, zero bloat.
+          A single static Go binary that polls your validator&apos;s JSON-RPC
+          into Prometheus and flags degradation before it becomes on-chain
+          delinquency. Self-hosted, with no external API fees.
         </p>
 
         <div className="mt-12 bg-red-900/10 border border-red-500/20 rounded-lg p-6 max-w-3xl mx-auto">

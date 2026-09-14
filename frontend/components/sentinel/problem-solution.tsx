@@ -36,7 +36,8 @@ export function ProblemSolution() {
             </p>
             <div className="mt-8 border-l-2 border-border pl-4">
               <p className="font-mono text-xs text-muted-foreground">
-                <span className="text-foreground">Alert latency:</span> 60–300s
+                <span className="text-foreground">Fires when:</span> already
+                delinquent
               </p>
               <p className="mt-1 font-mono text-xs text-muted-foreground">
                 <span className="text-foreground">Vote credits lost:</span>{" "}
@@ -60,18 +61,21 @@ export function ProblemSolution() {
               Predictive Z-Score Math.
             </h3>
             <p className="leading-relaxed text-muted-foreground">
-              SentinelSOL monitors absolute vote velocity locally, catching
-              hardware exhaustion{" "}
+              SentinelSOL tracks vote-credit velocity from the validator&apos;s
+              own JSON-RPC and fires when it sustains a drop of{" "}
               <span className="font-mono text-primary">
                 3 standard deviations
               </span>{" "}
-              before total failure. No polling lag. No external API round-trips.
-              Just raw signal, processed on-node, in real time.
+              below the node&apos;s rolling one-hour baseline. No external API
+              round-trips - the signal is polled and evaluated entirely on
+              infrastructure you control.
             </p>
             <div className="mt-8 border-l-2 border-primary/40 pl-4">
               <p className="font-mono text-xs text-muted-foreground">
-                <span className="text-foreground">Detection window:</span>{" "}
-                <span className="text-primary">&lt; 5s</span>
+                <span className="text-foreground">Detection path:</span>{" "}
+                <span className="text-primary">
+                  10s poll → 10s scrape → 2m sustained
+                </span>
               </p>
               <p className="mt-1 font-mono text-xs text-muted-foreground">
                 <span className="text-foreground">Degradation threshold:</span>{" "}

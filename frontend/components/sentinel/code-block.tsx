@@ -86,10 +86,11 @@ export function CodeBlock() {
               Real Go. No abstractions hiding the work.
             </h2>
             <p className="mt-4 leading-relaxed text-muted-foreground">
-              The extractor polls your local RPC endpoint on a tight ticker,
-              computes a rolling z-score over vote-velocity deltas, and pushes
-              metrics to a local Prometheus exporter - all in a single
-              self-contained binary you can audit line-by-line.
+              The extractor polls your validator&apos;s JSON-RPC every 10
+              seconds and exports vote-credit accrual and slot progression on a
+              Prometheus endpoint. The 3-sigma Z-score runs in Prometheus itself
+              as recording and alerting rules, so the Go binary stays a small,
+              auditable collector you can read line-by-line.
             </p>
             <div className="mt-8 flex items-center gap-4">
               <div className="flex items-center gap-2">
