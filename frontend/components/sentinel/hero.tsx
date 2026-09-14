@@ -12,7 +12,7 @@ export function Hero() {
         <div className="mb-6 inline-flex items-center gap-2 rounded border border-border bg-card px-3 py-1">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           <span className="font-mono text-xs text-muted-foreground">
-            Colosseum Hackathon 2026
+            Winner - Superteam Germany / neosfer Ideathon 2026
           </span>
         </div>
 

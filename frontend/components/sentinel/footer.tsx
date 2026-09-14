@@ -9,7 +9,7 @@ const profileLinks = [
     Icon: Twitter,
   },
   {
-    href: "https://www.linkedin.com/shamza31",
+    href: "https://www.linkedin.com/in/shamza31",
     label: "LinkedIn profile",
     Icon: Linkedin,
   },
@@ -33,8 +33,10 @@ export function Footer() {
 
         <div className="flex flex-wrap items-center justify-center gap-3">
           <p className="font-mono text-xs text-muted-foreground">
-            Built for{" "}
-            <span className="text-primary">Colosseum Hackathon 2026</span>
+            Winner,{" "}
+            <span className="text-primary">
+              Superteam Germany / neosfer Ideathon 2026
+            </span>
           </p>
           <div className="flex items-center gap-1">
             {profileLinks.map(({ href, label, Icon }) => (
@@ -53,8 +55,8 @@ export function Footer() {
         </div>
 
         <div className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" aria-hidden="true" />
-          <span>Validator-operated</span>
+          <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden="true" />
+          <span>Open source - MIT</span>
         </div>
       </div>
     </footer>
