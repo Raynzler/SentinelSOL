@@ -2,13 +2,13 @@
 ![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat&logo=docker)
 
-**Predictive SRE Observability Pipeline for Solana Validators**
+**Distributed Validator Node Monitoring for Solana** — Go, Prometheus, PromQL, Alertmanager, Grafana
 
 🔴 Live Demo & Next.js Frontend: https://sentinelsol-sre.vercel.app/
 
-*Built for the Colosseum Hackathon 2026*
+*Winner, Superteam Germany / neosfer Solana Ideathon, Frankfurt 2026. Also submitted to the Colosseum Frontier hackathon.*
 
-![SentinelSOL Dashboard](./frontend/public/graphs.jpg)
+![SentinelSOL Dashboard](./frontend/public/dashboard.jpg)
 
 ## 📜 The Genesis: Surviving the Prune
 The era of 'set and forget' validation on Solana is over. Recently, the Solana Foundation Delegation Program (SFDP) shifted from blindly incentivizing decentralization to ruthlessly enforcing node performance. With the introduction of the 3-to-1 pruning rule and active stake-stripping for delinquency, a node's profitability is now entirely dependent on its uptime and Timely Vote Credits (TVC).
@@ -27,7 +27,7 @@ Current Solana validator monitoring tools act as "Check Engine" lights that only
 ## 🟢 The Solution: Statistical Anomaly Detection
 SentinelSOL is a separate-process observability pipeline that detects hardware and network exhaustion *before* it results in on-chain delinquency. 
 
-Instead of waiting for the node to crash, our Golang extraction engine tracks the velocity of **Timely Vote Credits (TVC)** relative to the absolute **Slot Processing Height** in real-time. By utilizing PromQL mathematics, SentinelSOL establishes a rolling 1-hour performance baseline. 
+Instead of waiting for the node to crash, the Go extraction engine exports **vote-credit accrual** and **slot progression** straight from the validator's JSON-RPC. Prometheus derives vote-credit velocity as a recording rule and establishes a rolling 1-hour performance baseline learned from the node's own history. 
 
 We utilize **Z-Score Anomaly Detection** to dynamically learn the validator's rhythm. If the real-time efficiency drops **3 standard deviations** below its historical norm, SentinelSOL proactively pages the operator via Telegram. 
 
@@ -37,12 +37,12 @@ Catch the degradation. Save the revenue.
 
 ## 🏗️ Architecture
 
-SentinelSOL decouples the extraction, logic, and alerting layers to ensure high availability and clean separation of concerns.
+SentinelSOL decouples the extraction, logic, and alerting layers for clean separation of concerns.
 
 The architecture is completely environment-agnostic: operators inject an `RPC_URL` environment variable to target any Solana RPC source. That can be a local `solana-test-validator` during development, or a dedicated Mainnet RPC node such as Helius for live monitoring.
 
 * **Solana Node:** Local `solana-test-validator` emitting JSON-RPC telemetry.
-* **Go Extractor:** A concurrent daemon fetching Epoch Credits and Slot Height synchronously to prevent metric time-drift.
+* **Go Extractor:** A daemon fetching Epoch Credits and Slot Height concurrently under a `sync.WaitGroup`, so both metrics share a timestamp and cannot drift apart.
 * **Prometheus:** Time-series database executing Z-Score anomaly detection against historical baselines.
 * **Alertmanager:** Handles alert deduplication, rate-limiting, and webhook routing.
 * **Telegram API:** Native mobile paging via SentinelBot.
@@ -116,6 +116,17 @@ docker-compose up -d --build
    make up
    ```
    Open `http://localhost:3000` to view SentinelSOL telemetry.
+
+## 🔧 Engineering Notes
+
+Decisions in the daemon and the alerting rules that are worth calling out, each verifiable in the source.
+
+* **Fixed a detection blind spot (commit `5d85ee8`).** The original alerting rule divided vote-credit rate by slot rate. When the validator stalls, the denominator goes to zero and the expression becomes undefined — so the alert fell silent at exactly the moment it existed to catch. It was replaced with a plain `rate()` over vote credits, which degrades toward zero instead of vanishing. (`config/alerts.rules.yml`)
+* **Backoff retries only transient failures.** Timeouts, transport errors and 5xx are retried with exponential backoff; anything else fails fast rather than burning retries on a deterministic error. (`cmd/sentinelsol/main.go:76`, `:97`)
+* **A 5-second HTTP client timeout.** The moment the daemon is most likely to meet a slow RPC is while the node is degrading — precisely when it must not hang and leak goroutines. (`cmd/sentinelsol/main.go:24`)
+* **Both endpoints scraped concurrently.** `getVoteAccounts` and `getSlot` are fetched in parallel under a `sync.WaitGroup` so the two metrics share a timestamp. (`cmd/sentinelsol/main.go:153-172`)
+* **pprof bound to loopback.** The profiler listens on `127.0.0.1:6060`, not `0.0.0.0`, keeping a profiling and DoS surface off the network. (`cmd/sentinelsol/main.go:189`)
+* **Grafana dashboards provisioned as code**, so the dashboard is reviewable and reproducible rather than hand-built in the UI. (`config/grafana/`)
 
 ## 🚀 Future Roadmap
 
